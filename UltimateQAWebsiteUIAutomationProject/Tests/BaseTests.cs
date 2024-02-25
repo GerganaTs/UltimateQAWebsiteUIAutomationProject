@@ -1,7 +1,7 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using UltimateqaWebsiteUIAutomation.Configuration;
-using UltimateQAWebsiteUIAutomationProject.Pages;
+using NUnit.Framework;
 
 namespace UltimateQAWebsiteUIAutomationProject.Tests
 {
@@ -10,7 +10,6 @@ namespace UltimateQAWebsiteUIAutomationProject.Tests
         protected IWebDriver driver;
 
         [SetUp]
-
         public void Setup()
         {
             driver = new ChromeDriver();

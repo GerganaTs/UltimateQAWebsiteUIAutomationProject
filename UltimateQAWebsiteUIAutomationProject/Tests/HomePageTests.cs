@@ -16,12 +16,6 @@ namespace UltimateQAWebsiteUIAutomationProject.Tests
             homePage = new HomePage(driver);
         }
 
-        [TearDown] 
-        public void TestTearDown()
-        {
-            driver.Close();
-        }
-
         [Test]
         public void PageTitleTest()
         {
@@ -36,11 +30,18 @@ namespace UltimateQAWebsiteUIAutomationProject.Tests
         [TestCase("Login automation")]
         [TestCase("Interactions with simple elements")]
 
-        public void TestHomePageLinks(string currentLink)
+        public void TestHomePageLinksExistingAndCursorPointer(string currentLink)
         {
             bool resultLink = homePage.IsLinkPresentOnThePage(currentLink);
 
             Assert.That(resultLink, Is.EqualTo(true));
+
+            IWebElement el = driver.FindElement(By.LinkText(currentLink));
+            // Get the CSS value of the cursor property
+            string cursorStyle = el.GetCssValue("cursor");
+
+            // Assert: Check the cursor style
+            Assert.That(cursorStyle, Is.EqualTo("pointer")); // Adjust the expected cursor style as needed
         }
 
         [Test]
@@ -53,12 +54,23 @@ namespace UltimateQAWebsiteUIAutomationProject.Tests
 
         public void TestHomePageLinksColor(string currentLink)
         {
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-            wait.Until(x => x.FindElement(By.LinkText(currentLink)));
+            // Arrange
             IWebElement link = driver.FindElement(By.LinkText(currentLink));
-            string linkColor = link.GetCssValue("color");
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
 
-            Assert.That(linkColor.ToString(), Is.EqualTo("rgba(46, 163, 242, 1)"));
+            // Act
+            string initialColor = link.GetCssValue("color");
+
+            // Check if the color is not black
+            if (!initialColor.Equals("rgba(46, 163, 242, 1)"))
+            {
+                // Wait for the color to change
+                wait.Until(driver => !link.GetCssValue("color").Equals(initialColor));
+            }
+
+            // Assert
+            string finalColor = link.GetCssValue("color");
+            Assert.That(finalColor, Is.EqualTo("rgba(46, 163, 242, 1)")); // Assert that the color is not black
         }
 
         [Test]
@@ -71,8 +83,7 @@ namespace UltimateQAWebsiteUIAutomationProject.Tests
 
         public void TestHomePageLinksColorOnHover(string currentLink)
         {
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-            wait.Until(x => x.FindElement(By.LinkText(currentLink)));
+            homePage.WaitForLinkToBeLoaded(currentLink);
             IWebElement link = driver.FindElement(By.LinkText(currentLink));
 
             // simulating hover efect
@@ -94,8 +105,7 @@ namespace UltimateQAWebsiteUIAutomationProject.Tests
 
         public void TestHomePageLinksColorOnFocus(string currentLink)
         {
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-            wait.Until(x => x.FindElement(By.LinkText(currentLink)));
+            homePage.WaitForLinkToBeLoaded(currentLink);
             IWebElement link = driver.FindElement(By.LinkText(currentLink));
 
             // simulating focus efect

@@ -46,5 +46,11 @@ namespace UltimateQAWebsiteUIAutomationProject.Pages
                 return false;
             }
         }
+
+        public void WaitForLinkToBeLoaded(string elementToBeLoaded)
+        {
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            wait.Until(x => x.FindElement(By.LinkText(elementToBeLoaded)));
+        }
     }
 }
